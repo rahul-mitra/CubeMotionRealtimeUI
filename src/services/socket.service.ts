@@ -51,15 +51,41 @@ export class SocketService {
     });
   }
 
-  public emitAxis(x: number, y: number, z: number, roomID: string) {
+  public emitAxisX(x: number, roomID: string) {
     if (roomID)
-      this.socketClient.emit("emitAxis", { x: x, y: y, z: z }, roomID)
+      this.socketClient.emit("emitAxisX", x, roomID)
   }
 
-  public onEmitAxis(): Observable<{ x: number, y: number, z: number }> {
-    return new Observable<{ x: number, y: number, z: number }>((observer) => {
-      this.socketClient.on("emitAxis", (axis: { x: number, y: number, z: number }) => {
-        observer.next(axis)
+  public onEmitAxisX(): Observable<number> {
+    return new Observable<number>((observer) => {
+      this.socketClient.on("emitAxisX", (x: number) => {
+        observer.next(x)
+      });
+    });
+  }
+
+  public emitAxisY(y: number, roomID: string) {
+    if (roomID)
+      this.socketClient.emit("emitAxisY", y, roomID)
+  }
+
+  public onEmitAxisY(): Observable<number> {
+    return new Observable<number>((observer) => {
+      this.socketClient.on("emitAxisY", (y: number) => {
+        observer.next(y)
+      });
+    });
+  }
+
+  public emitAxisZ(z: number, roomID: string) {
+    if (roomID)
+      this.socketClient.emit("emitAxisZ", z, roomID)
+  }
+
+  public onEmitAxisZ(): Observable<number> {
+    return new Observable<number>((observer) => {
+      this.socketClient.on("emitAxisZ", (z: number) => {
+        observer.next(z)
       });
     });
   }

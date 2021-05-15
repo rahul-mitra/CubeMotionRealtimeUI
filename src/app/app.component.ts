@@ -52,13 +52,19 @@ export class AppComponent implements OnDestroy, OnInit {
       this.changeColor(colorCode);
       console.log("Recieved color code");
     }));
-    this.subs.push(this.socketService.onEmitAxis().subscribe(axis => {
-      this.mesh.rotation.x = axis.x;
-      this.mesh.rotation.y = axis.y;
-      this.mesh.rotation.z = axis.z;
-      this.cstX = axis.x;
-      this.cstY = axis.y;
-      this.cstZ = axis.z;
+    this.subs.push(this.socketService.onEmitAxisX().subscribe(x => {
+      this.mesh.rotation.x = x;
+      this.cstX = x;
+      this.setRenderer();
+    }));
+    this.subs.push(this.socketService.onEmitAxisY().subscribe(y => {
+      this.mesh.rotation.y = y;
+      this.cstY = y;
+      this.setRenderer();
+    }));
+    this.subs.push(this.socketService.onEmitAxisZ().subscribe(z => {
+      this.mesh.rotation.z = z;
+      this.cstZ = z;
       this.setRenderer();
     }));
     this.subs.push(this.socketService.onServerMessage().subscribe(message => {
@@ -82,7 +88,7 @@ export class AppComponent implements OnDestroy, OnInit {
     if (x.value) {
       this.mesh.rotation.x = x.value;
       this.cstX = x.value;
-      this.socketService.emitAxis(this.cstX, this.cstY, this.cstZ, this.roomID);
+      this.socketService.emitAxisX(this.cstX,this.roomID);
       this.setRenderer();
     }
   }
@@ -91,7 +97,7 @@ export class AppComponent implements OnDestroy, OnInit {
     if (y.value) {
       this.mesh.rotation.y = y.value;
       this.cstY = y.value;
-      this.socketService.emitAxis(this.cstX, this.cstY, this.cstZ, this.roomID);
+      this.socketService.emitAxisY(this.cstY,this.roomID);
       this.setRenderer();
     }
   }
@@ -100,7 +106,7 @@ export class AppComponent implements OnDestroy, OnInit {
     if (z.value) {
       this.mesh.rotation.z = z.value;
       this.cstZ = z.value;
-      this.socketService.emitAxis(this.cstX, this.cstY, this.cstZ, this.roomID);
+      this.socketService.emitAxisZ(this.cstZ, this.roomID);
       this.setRenderer();
     }
   }
