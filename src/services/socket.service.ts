@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
 
-// export const socketServerURL: string = "https://api.quickchat.rahulmitra.dev"
+export const socketServerURL: string = "https://api.cube.rahulmitra.dev"
 // export const socketServerURL: string = "http://140.238.226.73:3000"
-export const socketServerURL: string = "http://localhost:3000";
+// export const socketServerURL: string = "http://localhost:3000";
 // export const socketServerURL: string = "https://rh-chat-server.herokuapp.com";
 const options = {
   reconnectionDelayMax: 10000,
