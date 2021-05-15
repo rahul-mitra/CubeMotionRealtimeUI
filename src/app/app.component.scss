@@ -1,0 +1,16 @@
+.sliderHolder {
+  display: grid;
+  flex: 0 1 50%;
+}
+.colorDisplay {
+  flex: 0 1 50%;
+  max-height: 150px;
+  overflow: auto;
+}
+
+.appStyle {
+  display: flex;
+}
+.colorCode{
+  cursor: pointer;
+}
