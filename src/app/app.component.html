@@ -22,7 +22,7 @@
     <div class="colorDisplay">
       <div *ngFor="let cwt of colorsUsed">
         <span class="colorCode" (click)="changeColor(cwt.colorCode,true)"
-          [style.background-color]="cwt.colorCode">{{cwt.colorCode}}</span><br>
+          [style.background-color]="cwt.colorCode[0]">{{cwt.colorCode[0]}}</span><br>
         <span><strong><small>{{cwt.time}}</small></strong></span>
       </div>
     </div>

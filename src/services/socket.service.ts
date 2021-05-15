@@ -4,9 +4,9 @@ import { Observable } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
 
 
-// export const socketServerURL: string = "http://140.238.226.73:3000"
+
 export const socketServerURL: string = "http://localhost:5000";
-// export const socketServerURL: string = "https://rh-chat-server.herokuapp.com";
+
 const options = {
   reconnectionDelayMax: 10000,
   reconnectionAttempts: 5,
@@ -37,10 +37,7 @@ export class SocketService {
   public disconnect() {
     this.socketClient.disconnect();
   }
-  public testServer() {
-    // console.log("Connection status ",this.socketClient.connected);
-    this.socketClient.emit("testServer", "testing 123");
-  }
+
 
 
   public onServerMessages(): Observable<string> {
@@ -97,16 +94,16 @@ export class SocketService {
     });
   }
 
-  public emitColor(colorCode: string, roomID: string) {
+  public emitColor(colorCode: Array<string>, roomID: string) {
     console.log("emitting color ", colorCode);
     console.log("emitting in room ", roomID);
     if (roomID)
       this.socketClient.emit("emitColor", colorCode, roomID)
   }
 
-  public onEmitColor(): Observable<string> {
-    return new Observable<string>((observer) => {
-      this.socketClient.on("emitColor", (colorCode: string) => {
+  public onEmitColor(): Observable<Array<string>> {
+    return new Observable<Array<string>>((observer) => {
+      this.socketClient.on("emitColor", (colorCode: Array<string>) => {
         observer.next(colorCode)
       });
     });

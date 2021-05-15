@@ -8,9 +8,9 @@ import { MatSliderChange } from '@angular/material/slider';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 export class ColorCodesWTime {
-  colorCode: string;
+  colorCode: Array<string>;
   time: Date
-  constructor(color: string) {
+  constructor(color: Array<string>) {
     this.colorCode = color;
     this.time = new Date;
   }
@@ -32,7 +32,14 @@ export class AppComponent implements OnDestroy, OnInit {
   roomID!: string;
   renderer!: THREE.WebGLRenderer;
   geometry!: THREE.BoxGeometry;
-  material!: THREE.MeshNormalMaterial;
+  material: THREE.MeshBasicMaterial[] = [
+    new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.8, side: THREE.DoubleSide }),
+    new THREE.MeshBasicMaterial({ color: 0x00ff00, transparent: true, opacity: 0.8, side: THREE.DoubleSide }),
+    new THREE.MeshBasicMaterial({ color: 0x0000ff, transparent: true, opacity: 0.8, side: THREE.DoubleSide }),
+    new THREE.MeshBasicMaterial({ color: 0xffff00, transparent: true, opacity: 0.8, side: THREE.DoubleSide }),
+    new THREE.MeshBasicMaterial({ color: 0xff00ff, transparent: true, opacity: 0.8, side: THREE.DoubleSide }),
+    new THREE.MeshBasicMaterial({ color: 0x00ffff, transparent: true, opacity: 0.8, side: THREE.DoubleSide }),
+  ];
   mesh!: THREE.Mesh;
   randomnum: number = 0;
   maxValue: number = 5;
@@ -88,7 +95,7 @@ export class AppComponent implements OnDestroy, OnInit {
     if (x.value) {
       this.mesh.rotation.x = x.value;
       this.cstX = x.value;
-      this.socketService.emitAxisX(this.cstX,this.roomID);
+      this.socketService.emitAxisX(this.cstX, this.roomID);
       this.setRenderer();
     }
   }
@@ -97,7 +104,7 @@ export class AppComponent implements OnDestroy, OnInit {
     if (y.value) {
       this.mesh.rotation.y = y.value;
       this.cstY = y.value;
-      this.socketService.emitAxisY(this.cstY,this.roomID);
+      this.socketService.emitAxisY(this.cstY, this.roomID);
       this.setRenderer();
     }
   }
@@ -115,15 +122,7 @@ export class AppComponent implements OnDestroy, OnInit {
     this.renderer.render(this.scene, this.camera)
   }
 
-  public test() {
-    this.socketService.testServer();
-    // this.randomnum=this.randomnum+1;
-    // this.mesh.rotation.x = this.randomnum / 10;
-    // this.mesh.rotation.y = this.randomnum / 20;
-    // this.mesh.rotation.z = this.randomnum / 30;
-    // console.log(this.mesh.rotation.x);
-    // this.renderer.render(this.scene, this.camera);
-  }
+
 
   public threeInit() {
     this.camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 10);
@@ -132,9 +131,10 @@ export class AppComponent implements OnDestroy, OnInit {
     this.scene = new THREE.Scene();
 
     this.geometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
-    this.material = new THREE.MeshNormalMaterial();
-
+    // this.material = new THREE.MeshNormalMaterial();
     this.mesh = new THREE.Mesh(this.geometry, this.material);
+
+    // this.mesh = new THREE.Mesh( new THREE.BoxGeometry( 562, 562, 562, 1, 1, 1 ), this.material );
     this.scene.add(this.mesh);
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
     this.renderer.setSize(window.innerWidth, window.innerHeight);
@@ -152,30 +152,57 @@ export class AppComponent implements OnDestroy, OnInit {
     }
   }
 
-  changeColor(colorCode?: string, callEmitter: boolean = false) {
+  changeColor(colorCode?:Array<string>, callEmitter: boolean = false) {
+    if(!this.roomID)
+    {
+      this.socketService.openSnackBar("Please join a room first")
+      return;
+    }
     if (colorCode) {
-      this.mesh.material = new THREE.MeshBasicMaterial({ color: colorCode });
+      this.material = [
+        new THREE.MeshBasicMaterial({ color: colorCode[0], transparent: true, opacity: 0.8, side: THREE.DoubleSide }),
+        new THREE.MeshBasicMaterial({ color: colorCode[1], transparent: true, opacity: 0.8, side: THREE.DoubleSide }),
+        new THREE.MeshBasicMaterial({ color: colorCode[2], transparent: true, opacity: 0.8, side: THREE.DoubleSide }),
+        new THREE.MeshBasicMaterial({ color: colorCode[3], transparent: true, opacity: 0.8, side: THREE.DoubleSide }),
+        new THREE.MeshBasicMaterial({ color: colorCode[4], transparent: true, opacity: 0.8, side: THREE.DoubleSide }),
+        new THREE.MeshBasicMaterial({ color: colorCode[5], transparent: true, opacity: 0.8, side: THREE.DoubleSide }),
+      ];
+      this.mesh.material = this.material;
       this.colorsUsed.push(new ColorCodesWTime(colorCode));
       if (callEmitter)
         this.socketService.emitColor(colorCode, this.roomID);
     }
     else {
-      let color = this.randomColor();
-      this.socketService.emitColor(color, this.roomID);
-      this.mesh.material = new THREE.MeshBasicMaterial({ color: color })
-      this.colorsUsed.push(new ColorCodesWTime(color));
+      let colorarr: Array<string> = new Array<string>();
+      for (let index = 0; index < 6; index++) {
+        colorarr.push(this.randomColor());
+      }
+      this.colorsUsed.push(new ColorCodesWTime(colorarr));
+      this.socketService.emitColor(colorarr, this.roomID);
+      this.material = [
+        new THREE.MeshBasicMaterial({ color: colorarr[0], transparent: true, opacity: 0.8, side: THREE.DoubleSide }),
+        new THREE.MeshBasicMaterial({ color: colorarr[1], transparent: true, opacity: 0.8, side: THREE.DoubleSide }),
+        new THREE.MeshBasicMaterial({ color: colorarr[2], transparent: true, opacity: 0.8, side: THREE.DoubleSide }),
+        new THREE.MeshBasicMaterial({ color: colorarr[3], transparent: true, opacity: 0.8, side: THREE.DoubleSide }),
+        new THREE.MeshBasicMaterial({ color: colorarr[4], transparent: true, opacity: 0.8, side: THREE.DoubleSide }),
+        new THREE.MeshBasicMaterial({ color: colorarr[5], transparent: true, opacity: 0.8, side: THREE.DoubleSide }),
+      ];
+      this.mesh.material = this.material;
     }
     this.renderer.render(this.scene, this.camera);
   }
 
   randomColor() {
-    return "#" + Math.floor(Math.random() * 16777215).toString(16)
+    let color = "#" + Math.floor(Math.random() * 16777215).toString(16)
+    color = color.padEnd(7, "1");
+
+    return color;
   }
   joinRoom() {
     console.log()
     let roomid = this.fg.controls.roomID.value;
     console.log(roomid);
-    if (roomid){
+    if (roomid) {
       this.roomID = roomid;
       this.socketService.JoinRoom(roomid);
     }
