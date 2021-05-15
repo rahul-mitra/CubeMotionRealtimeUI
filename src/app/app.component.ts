@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 import * as THREE from 'three';
 import { isGeneratedFile } from '@angular/compiler/src/aot/util';
 import { MatSliderChange } from '@angular/material/slider';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 export class ColorCodesWTime {
   colorCode: string;
@@ -22,10 +23,13 @@ export class ColorCodesWTime {
 })
 export class AppComponent implements OnDestroy, OnInit {
   title = 'cubeui';
-
+  fg: FormGroup = new FormGroup({
+    roomID: new FormControl(null, Validators.required)
+  })
   public subs: Array<Subscription> = new Array<Subscription>();
   camera!: THREE.PerspectiveCamera;
   scene!: THREE.Scene;
+  roomID!: string;
   renderer!: THREE.WebGLRenderer;
   geometry!: THREE.BoxGeometry;
   material!: THREE.MeshNormalMaterial;
@@ -57,7 +61,9 @@ export class AppComponent implements OnDestroy, OnInit {
       this.cstZ = axis.z;
       this.setRenderer();
     }));
-
+    this.subs.push(this.socketService.onServerMessage().subscribe(message => {
+      this.socketService.openSnackBar(message, "Server", 5000);
+    }));
   }
 
 
@@ -76,7 +82,7 @@ export class AppComponent implements OnDestroy, OnInit {
     if (x.value) {
       this.mesh.rotation.x = x.value;
       this.cstX = x.value;
-      this.socketService.emitAxis(this.cstX, this.cstY, this.cstZ);
+      this.socketService.emitAxis(this.cstX, this.cstY, this.cstZ, this.roomID);
       this.setRenderer();
     }
   }
@@ -85,7 +91,7 @@ export class AppComponent implements OnDestroy, OnInit {
     if (y.value) {
       this.mesh.rotation.y = y.value;
       this.cstY = y.value;
-      this.socketService.emitAxis(this.cstX, this.cstY, this.cstZ);
+      this.socketService.emitAxis(this.cstX, this.cstY, this.cstZ, this.roomID);
       this.setRenderer();
     }
   }
@@ -94,7 +100,7 @@ export class AppComponent implements OnDestroy, OnInit {
     if (z.value) {
       this.mesh.rotation.z = z.value;
       this.cstZ = z.value;
-      this.socketService.emitAxis(this.cstX, this.cstY, this.cstZ);
+      this.socketService.emitAxis(this.cstX, this.cstY, this.cstZ, this.roomID);
       this.setRenderer();
     }
   }
@@ -145,11 +151,11 @@ export class AppComponent implements OnDestroy, OnInit {
       this.mesh.material = new THREE.MeshBasicMaterial({ color: colorCode });
       this.colorsUsed.push(new ColorCodesWTime(colorCode));
       if (callEmitter)
-        this.socketService.emitColor(colorCode);
+        this.socketService.emitColor(colorCode, this.roomID);
     }
     else {
       let color = this.randomColor();
-      this.socketService.emitColor(color);
+      this.socketService.emitColor(color, this.roomID);
       this.mesh.material = new THREE.MeshBasicMaterial({ color: color })
       this.colorsUsed.push(new ColorCodesWTime(color));
     }
@@ -158,5 +164,16 @@ export class AppComponent implements OnDestroy, OnInit {
 
   randomColor() {
     return "#" + Math.floor(Math.random() * 16777215).toString(16)
+  }
+  joinRoom() {
+    console.log()
+    let roomid = this.fg.controls.roomID.value;
+    console.log(roomid);
+    if (roomid){
+      this.roomID = roomid;
+      this.socketService.JoinRoom(roomid);
+    }
+    else
+      this.socketService.openSnackBar("Please enter a room name first")
   }
 }

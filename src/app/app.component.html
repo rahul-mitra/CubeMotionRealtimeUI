@@ -1,8 +1,15 @@
 <!-- <button mat-raised-button (click)="test()">Test</button> -->
-
+<form [formGroup]="fg" (ngSubmit)="joinRoom()">
+  <mat-form-field>
+    <mat-label>Room ID</mat-label>
+    <input matInput type="text" formControlName="roomID"/>
+  </mat-form-field>
+  <button mat-raised-button color="primary" type="submit" mat-input>Join</button>
+</form>
 <div class="appStyle">
-  <div class="sliderHolder">
-    <mat-slider (input)="changeX($event)" [max]="maxValue" [min]="0" step="0.000001"  [(ngModel)]="cstX">
+  <h2 *ngIf="!roomID">Join room to start</h2>
+  <div class="sliderHolder" *ngIf="roomID">
+    <mat-slider (input)="changeX($event)" [max]="maxValue" [min]="0" step="0.000001" [(ngModel)]="cstX">
     </mat-slider>
 
     <mat-slider (input)="changeY($event)" [max]="maxValue" [min]="0" step="0.000001" [(ngModel)]="cstY">
@@ -14,10 +21,10 @@
   <ng-container *ngIf="colorsUsed.length">
     <div class="colorDisplay">
       <div *ngFor="let cwt of colorsUsed">
-        <span class="colorCode" (click)="changeColor(cwt.colorCode,true)" [style.background-color]="cwt.colorCode">{{cwt.colorCode}}</span><br>
+        <span class="colorCode" (click)="changeColor(cwt.colorCode,true)"
+          [style.background-color]="cwt.colorCode">{{cwt.colorCode}}</span><br>
         <span><strong><small>{{cwt.time}}</small></strong></span>
       </div>
     </div>
   </ng-container>
 </div>
-
